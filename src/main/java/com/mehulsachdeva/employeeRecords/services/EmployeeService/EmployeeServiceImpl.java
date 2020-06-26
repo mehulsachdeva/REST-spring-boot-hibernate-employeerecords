@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mehulsachdeva.employeeRecords.models.Employee;
 import com.mehulsachdeva.employeeRecords.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -36,19 +39,11 @@ public class EmployeeServiceImpl {
     public Map<String, String> fetchEmployees() {
         try {
             List<Employee> employees = employeeRepository.findAll();
-            if(employees.size() > 0) {
-                return responseBuilder.createResponse(
-                        Constants.SUCCESS_STATUS,
-                        new ObjectMapper().writeValueAsString(employees),
-                        Constants.NO_ERROR
-                );
-            }else {
-                return responseBuilder.createResponse(
-                        Constants.SUCCESS_STATUS,
-                        Constants.FETCH_EMPTY_RESPONSE,
-                        Constants.NO_ERROR
-                );
-            }
+            return responseBuilder.createResponse(
+                    Constants.SUCCESS_STATUS,
+                    new ObjectMapper().writeValueAsString(employees),
+                    Constants.NO_ERROR
+            );
         }catch (Exception e) {
             return responseBuilder.createResponse(
                     Constants.FAILED_STATUS,
@@ -140,19 +135,11 @@ public class EmployeeServiceImpl {
     public Map<String, String> fetchEmployeesByDepartment(String department) {
         try {
             List<Employee> employees = employeeRepository.findByDepartment(department);
-            if(employees.size() > 0) {
-                return responseBuilder.createResponse(
-                        Constants.SUCCESS_STATUS,
-                        new ObjectMapper().writeValueAsString(employees),
-                        Constants.NO_ERROR
-                );
-            }else {
-                return responseBuilder.createResponse(
-                        Constants.SUCCESS_STATUS,
-                        Constants.FETCH_EMPTY_RESPONSE,
-                        Constants.NO_ERROR
-                );
-            }
+            return responseBuilder.createResponse(
+                    Constants.SUCCESS_STATUS,
+                    new ObjectMapper().writeValueAsString(employees),
+                    Constants.NO_ERROR
+            );
         }catch(Exception e) {
             return responseBuilder.createResponse(
                     Constants.FAILED_STATUS,
@@ -165,19 +152,11 @@ public class EmployeeServiceImpl {
     public Map<String, String> fetchEmployeesByDOJAfter(Date doj) {
         try {
             List<Employee> employees = employeeRepository.findByDojAfter(doj);
-            if(employees.size() > 0) {
-                return responseBuilder.createResponse(
-                        Constants.SUCCESS_STATUS,
-                        new ObjectMapper().writeValueAsString(employees),
-                        Constants.NO_ERROR
-                );
-            }else {
-                return responseBuilder.createResponse(
-                        Constants.SUCCESS_STATUS,
-                        Constants.FETCH_EMPTY_RESPONSE,
-                        Constants.NO_ERROR
-                );
-            }
+            return responseBuilder.createResponse(
+                    Constants.SUCCESS_STATUS,
+                    new ObjectMapper().writeValueAsString(employees),
+                    Constants.NO_ERROR
+            );
         }catch(Exception e) {
             return responseBuilder.createResponse(
                     Constants.FAILED_STATUS,
@@ -208,6 +187,41 @@ public class EmployeeServiceImpl {
             return responseBuilder.createResponse(
                     Constants.FAILED_STATUS,
                     Constants.UPDATE_FAILURE_RESPONSE,
+                    Constants.EXCEPTION_RAISED + String.valueOf(e)
+            );
+        }
+    }
+
+    public Map<String, String> fetchEmployeesByPage(int page, int size) {
+        try {
+            PageRequest pageRequest = PageRequest.of(page, size, Sort.by("age").descending().and(Sort.by("salary").descending()));
+            Page<Employee> employeesPages = employeeRepository.findAll(pageRequest);
+            return responseBuilder.createResponse(
+                    Constants.SUCCESS_STATUS,
+                    new ObjectMapper().writeValueAsString(employeesPages),
+                    Constants.NO_ERROR
+            );
+        }catch(Exception e) {
+            return responseBuilder.createResponse(
+                    Constants.FAILED_STATUS,
+                    Constants.FETCH_FAILURE_RESPONSE,
+                    Constants.EXCEPTION_RAISED + String.valueOf(e)
+            );
+        }
+    }
+
+    public Map<String, String> fetchEmployeeWithDeptLessThanAge(String department, int age) {
+        try {
+            List<Employee> employees = employeeRepository.fetchDAEmployeeAgeLessThan24(department, age);
+            return responseBuilder.createResponse(
+                    Constants.SUCCESS_STATUS,
+                    new ObjectMapper().writeValueAsString(employees),
+                    Constants.NO_ERROR
+            );
+        }catch(Exception e) {
+            return responseBuilder.createResponse(
+                    Constants.FAILED_STATUS,
+                    Constants.FETCH_FAILURE_RESPONSE,
                     Constants.EXCEPTION_RAISED + String.valueOf(e)
             );
         }

@@ -52,8 +52,18 @@ public class EmployeeController {
         return employeeServiceImpl.fetchEmployeesByDOJAfter(doj);
     }
 
-    @RequestMapping("department/update/{employeeId}/{department}")
+    @RequestMapping("/department/update/{employeeId}/{department}")
     public Map<String, String> updateEmployeeDepartment(@PathVariable("employeeId") int employeeId, @PathVariable("department") String department) {
         return employeeServiceImpl.updateEmployeeDepartment(employeeId, department);
+    }
+
+    @RequestMapping("/pages/{page}/{size}")
+    public Map<String, String> fetchEmployeesByPages(@PathVariable("page") int page, @PathVariable("size") int size) {
+        return employeeServiceImpl.fetchEmployeesByPage(page, size);
+    }
+
+    @RequestMapping("/department/{department}/ageLessThan/{age}")
+    public Map<String, String> fetchEmployeesWithDeptLessThanAge(@PathVariable("department") String department, @PathVariable("age") int age) {
+        return employeeServiceImpl.fetchEmployeeWithDeptLessThanAge(department, age);
     }
 }
