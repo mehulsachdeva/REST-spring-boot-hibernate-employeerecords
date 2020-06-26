@@ -6,10 +6,7 @@ import com.mehulsachdeva.employeeRecords.util.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class EmployeeServiceImpl {
@@ -135,6 +132,82 @@ public class EmployeeServiceImpl {
             return responseBuilder.createResponse(
                     Constants.FAILED_STATUS,
                     Constants.DELETE_FAILURE_RESPONSE,
+                    Constants.EXCEPTION_RAISED + String.valueOf(e)
+            );
+        }
+    }
+
+    public Map<String, String> fetchEmployeesByDepartment(String department) {
+        try {
+            List<Employee> employees = employeeRepository.findByDepartment(department);
+            if(employees.size() > 0) {
+                return responseBuilder.createResponse(
+                        Constants.SUCCESS_STATUS,
+                        new ObjectMapper().writeValueAsString(employees),
+                        Constants.NO_ERROR
+                );
+            }else {
+                return responseBuilder.createResponse(
+                        Constants.SUCCESS_STATUS,
+                        Constants.FETCH_EMPTY_RESPONSE,
+                        Constants.NO_ERROR
+                );
+            }
+        }catch(Exception e) {
+            return responseBuilder.createResponse(
+                    Constants.FAILED_STATUS,
+                    Constants.FETCH_FAILURE_RESPONSE,
+                    Constants.EXCEPTION_RAISED + String.valueOf(e)
+            );
+        }
+    }
+
+    public Map<String, String> fetchEmployeesByDOJAfter(Date doj) {
+        try {
+            List<Employee> employees = employeeRepository.findByDojAfter(doj);
+            if(employees.size() > 0) {
+                return responseBuilder.createResponse(
+                        Constants.SUCCESS_STATUS,
+                        new ObjectMapper().writeValueAsString(employees),
+                        Constants.NO_ERROR
+                );
+            }else {
+                return responseBuilder.createResponse(
+                        Constants.SUCCESS_STATUS,
+                        Constants.FETCH_EMPTY_RESPONSE,
+                        Constants.NO_ERROR
+                );
+            }
+        }catch(Exception e) {
+            return responseBuilder.createResponse(
+                    Constants.FAILED_STATUS,
+                    Constants.FETCH_FAILURE_RESPONSE,
+                    Constants.EXCEPTION_RAISED + String.valueOf(e)
+            );
+        }
+    }
+
+    public Map<String, String> updateEmployeeDepartment(int employee_id, String department) {
+        try {
+            Optional<Employee> employeeContainerObj = employeeRepository.findById(employee_id);
+            if(employeeContainerObj.isPresent()) {
+                employeeRepository.updateEmployeeDepartment(employee_id, department);
+                return responseBuilder.createResponse(
+                        Constants.SUCCESS_STATUS,
+                        Constants.UPDATE_SUCCESS_RESPONSE,
+                        Constants.NO_ERROR
+                );
+            }else {
+                return responseBuilder.createResponse(
+                        Constants.SUCCESS_STATUS,
+                        Constants.UPDATE_NO_EMPLOYEE_FOUND_RESPONSE,
+                        Constants.NO_ERROR
+                );
+            }
+        }catch(Exception e) {
+            return responseBuilder.createResponse(
+                    Constants.FAILED_STATUS,
+                    Constants.UPDATE_FAILURE_RESPONSE,
                     Constants.EXCEPTION_RAISED + String.valueOf(e)
             );
         }

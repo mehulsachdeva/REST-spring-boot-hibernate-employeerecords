@@ -19,4 +19,7 @@ public class Constants {
     public static final String FAILED_STATUS = "Failure";
     public static final String NO_ERROR = "";
     public static final String EXCEPTION_RAISED = "Exception Raised: ";
+
+    //SQL Query
+    public static final String UPDATE_EMPLOYEE_DEPARTMENT_QUERY = "UPDATE employees SET department = :department WHERE employee_id = :employee_id";
 }
